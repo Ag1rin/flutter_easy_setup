@@ -12,9 +12,7 @@ final yellowPen = AnsiPen()..yellow(bold: true);
 final cyanPen = AnsiPen()..cyan(bold: true);
 
 void main(List<String> arguments) async {
-  // Parse arguments if any (e.g., --version)
-  final parser = ArgParser()
-    ..addFlag('version', abbr: 'v', help: 'Show version');
+  final parser = ArgParser()..addFlag('version', abbr: 'v', help: 'Show version');
   final results = parser.parse(arguments);
 
   if (results['version']) {
@@ -22,10 +20,8 @@ void main(List<String> arguments) async {
     return;
   }
 
-  // Display welcome screen
   displayWelcome();
 
-  // Interactive loop
   while (true) {
     print(yellowPen('\nSelect an option (0-6):'));
     final input = stdin.readLineSync();
@@ -59,18 +55,15 @@ void main(List<String> arguments) async {
       }
     } catch (e) {
       logError('Error in operation: $e');
-      print(redPen('An error occurred: $e. Check log file for details.'));
+      print(redPen('An error occurred: $e. Check flutter_setup_log.txt for details.'));
     }
   }
 }
 
-// Welcome screen
 void displayWelcome() {
-  print(
-    cyanPen(r'''                                                     
-  Easy Setup CLI - Version 1.0.0
-  '''),
-  );
+  print(cyanPen(r'''    
+  Easy Setup CLI - Version 1.0.0 (Supports Flutter 3.38.5 - December 2025)
+  '''));
 
   print(greenPen('Welcome to Flutter Easy Setup!'));
   print('Options:');
@@ -83,7 +76,6 @@ void displayWelcome() {
   print('0. Exit');
 }
 
-// Run flutter doctor
 Future<void> runFlutterDoctor() async {
   print(yellowPen('Running flutter doctor...'));
   var shell = Shell();
@@ -91,12 +83,10 @@ Future<void> runFlutterDoctor() async {
   print(greenPen('Flutter doctor complete.'));
 }
 
-// Check SDKs
 Future<void> checkSDKs() async {
   print(yellowPen('Checking SDKs...'));
   var shell = Shell();
 
-  // Check Flutter
   try {
     await shell.run('flutter --version');
     print(greenPen('Flutter is installed.'));
@@ -104,7 +94,6 @@ Future<void> checkSDKs() async {
     print(redPen('Flutter not found.'));
   }
 
-  // Check Dart
   try {
     await shell.run('dart --version');
     print(greenPen('Dart is installed.'));
@@ -112,7 +101,6 @@ Future<void> checkSDKs() async {
     print(redPen('Dart not found.'));
   }
 
-  // Check Android SDK (cmdline-tools)
   try {
     await shell.run('sdkmanager --version');
     print(greenPen('Android SDK tools are installed.'));
@@ -121,135 +109,150 @@ Future<void> checkSDKs() async {
   }
 }
 
-// Install or Fix
 Future<void> installOrFix() async {
   print(yellowPen('Starting installation/fix...'));
   var shell = Shell();
 
-  // Detect OS
   final os = Platform.operatingSystem;
   print('Detected OS: $os');
 
-  // Install Git if missing
+  // Git check (manual install recommended)
   try {
     await shell.run('git --version');
+    print(greenPen('Git is installed.'));
   } catch (_) {
-    print(yellowPen('Installing Git...'));
-    if (os == 'macos') {
-      await shell.run('brew install git');
-    } else if (os == 'windows') {
-      await shell.run('choco install git');
-    } else if (os == 'linux') {
-      await shell.run('sudo apt install git');
-    }
+    print(redPen('Git not found. Please install Git manually from https://git-scm.com'));
   }
 
-  // Download Flutter if missing
-  final flutterPath = Directory('${Platform.environment['HOME']}/flutter');
+  // Home directory handling
+  final home = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? '~';
+  final flutterPath = Directory('$home/flutter');
+
   if (!flutterPath.existsSync()) {
-    print(yellowPen('Downloading Flutter...'));
-    final url = await getLatestFlutterUrl(); // Get latest stable URL
-    final response = await http.get(Uri.parse(url));
-    final file = File('flutter.zip');
-    await file.writeAsBytes(response.bodyBytes);
-    showProgress(
-      file.lengthSync(),
-      response.contentLength ?? 0,
-    ); // Simple progress
-    await shell.run('unzip flutter.zip -d ~/');
-    // Update PATH using new environment map
+    print(yellowPen('Downloading Flutter SDK v3.38.5 (stable)...'));
+    final url = await getLatestFlutterUrl();
+    final filename = url.split('/').last;
+
+    // Download with live progress bar
+    final request = await HttpClient().getUrl(Uri.parse(url));
+    final response = await request.close();
+    final total = response.contentLength;
+    final file = File(filename);
+    final sink = file.openWrite();
+    var downloaded = 0;
+
+    await for (final chunk in response) {
+      downloaded += chunk.length;
+      sink.add(chunk);
+      if (total != null && total > 0) {
+        final percent = (downloaded / total * 100).toStringAsFixed(1);
+        stdout.write('\rDownloading Flutter SDK... $percent% ($downloaded/$total bytes)');
+      }
+    }
+    await sink.close();
+    print('\n${greenPen('Download complete!')}');
+
+    // Extract
+    print(yellowPen('Extracting Flutter SDK...'));
+    if (os == 'linux') {
+      await shell.run('tar -xf $filename -C $home');
+    } else {
+      await shell.run('unzip -q $filename -d $home'); // -q for quiet
+    }
+
+    // Clean up downloaded file
+    if (file.existsSync()) file.deleteSync();
+    print(greenPen('Flutter SDK extracted to $home/flutter'));
+
+    // Update PATH for current session
     final newEnv = Map<String, String>.from(Platform.environment);
-    newEnv['PATH'] = '${newEnv['PATH']}:~/flutter/bin';
+    final flutterBin = '$home/flutter/bin';
+    newEnv['PATH'] = '${newEnv['PATH']}${Platform.pathSeparator}$flutterBin';
     shell = Shell(environment: newEnv);
-    print(greenPen('Flutter installed and PATH updated for this session.'));
   } else {
-    print(greenPen('Flutter already exists.'));
+    print(greenPen('Flutter already exists at ${flutterPath.path}'));
   }
 
-  // Install Android cmdline-tools if missing
+  // cmdline-tools
   try {
     await shell.run('sdkmanager --version');
   } catch (_) {
-    print(yellowPen('Installing Android cmdline-tools...'));
-    await shell.run('sdkmanager "cmdline-tools;latest"');
+    print(yellowPen('Installing Android cmdline-tools (latest)...'));
+    await shell.run('sdkmanager "cmdline-tools;latest" --sdk_root=${Platform.environment['ANDROID_HOME'] ?? '$home/android-sdk'}');
   }
 
   // Accept licenses
-  await shell.run('flutter doctor --android-licenses');
+  try {
+    await shell.run('flutter doctor --android-licenses --accept');
+  } catch (_) {
+    print(yellowPen('Accepting Android licenses interactively...'));
+    await shell.run('flutter doctor --android-licenses');
+  }
 
-  // Fix lockfile
-  final lockfile = File('~/flutter/bin/cache/lockfile');
+  // Remove lockfile
+  final lockfile = File('$home/flutter/bin/cache/lockfile');
   if (lockfile.existsSync()) {
     lockfile.deleteSync();
-    print(greenPen('Lockfile removed.'));
+    print(greenPen('Startup lockfile removed.'));
   }
 
-  // Set environment variables (instruct user for permanent)
-  print(
-    yellowPen(r'Add to PATH permanently: export PATH="$PATH:~/flutter/bin"'),
-  );
-  print(greenPen('Installation/Fix complete.'));
+  // Permanent PATH instructions
+  print(yellowPen('\nImportant: Add Flutter to PATH permanently:'));
+  if (os == 'windows') {
+    print(yellowPen(r'Set Environment Variable: PATH += ;%USERPROFILE%\flutter\bin'));
+  } else if (os == 'macos' || os == 'linux') {
+    print(yellowPen(r'Add to ~/.zshrc or ~/.bashrc: export PATH="$PATH:$home/flutter/bin"'));
+    print(yellowPen('Then run: source ~/.zshrc (or ~/.bashrc)'));
+  }
+
+  print(greenPen('Setup complete! Run option 1 (flutter doctor) to verify.'));
 }
 
-// Get latest Flutter download URL (example for stable, update as needed)
 Future<String> getLatestFlutterUrl() async {
-  // For simplicity, hardcode or fetch from API. Here: stable Windows example, adjust per OS
   if (Platform.isWindows) {
-    return 'https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.27.0-stable.zip';
+    return 'https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.38.5-stable.zip';
   } else if (Platform.isMacOS) {
-    return 'https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.27.0-stable.zip';
+    return 'https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_arm64_3.38.5-stable.zip';
   } else if (Platform.isLinux) {
-    return 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.27.0-stable.tar.xz';
+    return 'https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.38.5-stable.tar.xz';
   }
-  throw Exception('Unsupported OS');
+  throw Exception('Unsupported operating system');
 }
 
-// Simple progress bar for download
-void showProgress(int current, int total) {
-  final percentage = (current / total * 100).toInt();
-  print('Download progress: $percentage%');
-  // Add timer for simulation if needed
-}
-
-// Update all
 Future<void> updateAll() async {
   print(yellowPen('Check for updates? (Y/N)'));
   final confirm = stdin.readLineSync()?.toUpperCase() ?? 'N';
   if (confirm != 'Y') return;
 
-  print(yellowPen('Updating...'));
+  print(yellowPen('Updating Flutter, Dart, and tools...'));
   var shell = Shell();
-  await shell.run('flutter upgrade');
-  await shell.run('dart pub upgrade');
-  await shell.run('sdkmanager --update');
-  print(greenPen('Update complete.'));
+  await shell.run('flutter upgrade --force');
+  await shell.run('flutter doctor -v');
+  print(greenPen('Update complete!'));
 }
 
-// Display Help
 void displayHelp() {
-  print(greenPen('Installation Guide:'));
-  print('1. Install Git if not present.');
-  print('2. Download Flutter SDK from official site.');
-  print('3. Extract to ~/flutter and add to PATH.');
-  print('4. Run flutter doctor and fix issues.');
-  print('5. Install Android cmdline-tools via sdkmanager.');
-  print('6. Accept Android licenses.');
-  print('7. For iOS (macOS): Install Xcode and CocoaPods.');
-  print('More details: https://flutter.dev/docs/get-started/install');
+  print(greenPen('Flutter Installation Guide (December 2025):'));
+  print('1. Install Git from https://git-scm.com');
+  print('2. Run this tool → Option 3 for automatic setup');
+  print('3. Add flutter/bin to your PATH permanently');
+  print('4. Run "flutter doctor" and fix remaining issues');
+  print('5. For Android: Licenses are auto-accepted where possible');
+  print('6. For iOS (macOS): Install Xcode from App Store + run "sudo xcode-select --install"');
+  print('Official guide: https://docs.flutter.dev/get-started/install');
 }
 
-// Display About
 void displayAbout() {
-  print(greenPen('About Flutter Easy Setup CLI:'));
-  print('Created by Agirîn.');
-  print('This tool simplifies Flutter setup and fixes common issues.');
+  print(greenPen('About Flutter Easy Setup CLI'));
+  print('Version: 1.2.0');
+  print('Supports Flutter 3.38.5 (Stable - December 2025)');
+  print('Created by Agirîn');
   print('GitHub: https://github.com/Ag1rin/flutter_easy_setup');
-  print('Version: 1.0.0');
-  // Add your details here
+  print('This tool automates Flutter setup and fixes common issues.');
+  print('Open source - Contributions welcome!');
 }
 
-// Log error to file
 void logError(String message) {
   final logFile = File('flutter_setup_log.txt');
-  logFile.writeAsStringSync('$message\n', mode: FileMode.append);
+  logFile.writeAsStringSync('${DateTime.now()}: $message\n', mode: FileMode.append);
 }
