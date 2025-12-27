@@ -94,7 +94,7 @@ You'll see a beautiful welcome screen and menu:
 
 ## Supported Flutter Version
 
-This release (v1.0.0) installs and supports **Flutter 3.38.5 stable** (released December 12, 2025) — the latest stable version as of December 2025.
+This release (v1.0.5) installs and supports **Flutter 3.38.5 stable** (released December 12, 2025) — the latest stable version as of December 2025.
 
 Future releases will include automatic latest-version detection.
 

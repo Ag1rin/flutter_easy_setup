@@ -20,7 +20,7 @@ void main(List<String> arguments) async {
   if (results['version']) {
     print(
       greenPen(
-        'Flutter Easy Setup CLI - Version 1.0.2 (Supports Flutter 3.38.5 - December 2025)',
+        'Flutter Easy Setup CLI - Version 1.0.5 (Supports Flutter 3.38.5 - December 2025)',
       ),
     );
     return;
@@ -73,7 +73,7 @@ void main(List<String> arguments) async {
 void displayWelcome() {
   print(
     cyanPen(r'''    
-  Easy Setup CLI - Version 1.0.0 (Supports Flutter 3.38.5 - December 2025)
+  Easy Setup CLI - Version 1.0.5 (Supports Flutter 3.38.5 - December 2025)
   '''),
   );
 

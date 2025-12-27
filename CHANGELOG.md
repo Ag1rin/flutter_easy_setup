@@ -1,3 +1,12 @@
+## [1.0.5]
+- fix release 
+
+## [1.0.4]
+- fix release 
+
+## [1.0.3]
+- fix release 
+
 ## [1.0.2]
 - update for best release
 - fix release 
