@@ -12,48 +12,76 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            output: fes-linux
+            artifact_name: fes-linux
           - os: macos-latest
-            output: fes-macos
+            artifact_name: fes-macos
           - os: windows-latest
-            output: fes-windows.exe
+            artifact_name: fes-windows.exe
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Dart
+      - name: Setup Dart SDK
         uses: dart-lang/setup-dart@v1
 
       - name: Install dependencies
         run: dart pub get
 
       - name: Compile executable
-        run: dart compile exe bin/main.dart -o ${{ matrix.output }}
+        run: dart compile exe bin/flutter_easy_setup.dart -o ${{ matrix.artifact_name }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.output }}
-          path: ${{ matrix.output }}
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_name }}
 
-  release:
+  create-release:
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-
-      - name: Create GitHub Release
-        run: |
-          gh release create ${{ github.ref_name }} \
-            fes-linux/fes-linux \
-            fes-macos/fes-macos \
-            fes-windows.exe/fes-windows.exe \
-            --title "Flutter Easy Setup v${{ github.ref_name }}" \
-            --notes "Initial release - Automated Flutter setup tool with beautiful CLI" \
-            --draft=false
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Flutter Easy Setup v${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+  upload-assets:
+    needs: create-release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - artifact: fes-linux
+            filename: fes-linux
+          - artifact: fes-macos
+            filename: fes-macos
+          - artifact: fes-windows.exe
+            filename: fes-windows.exe
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: .
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ${{ matrix.filename }}
+          asset_name: ${{ matrix.filename }}
+          asset_content_type: application/octet-stream
