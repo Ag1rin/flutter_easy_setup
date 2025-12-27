@@ -67,14 +67,7 @@ void main(List<String> arguments) async {
 // Welcome screen
 void displayWelcome() {
   print(
-    cyanPen(r'''
-   _____ _           _   _           _____                _____       _             
-  |  ___| |         | | | |         |  ___|              /  ___|     | |            
-  | |_  | | ___ _ __| |_| |_ ___ _ _| |__  __ _ ___ ___  \ `--. _   _| |_ ___  _ __ 
-  |  _| | |/ _ \ '__| __| __/ _ \ '__|  __|/ _` / __/ __|  `--. \ | | | __/ _ \| '__|
-  | |   | |  __/ |  | |_| ||  __/ |  | |__| (_| \__ \__ / /\__/ / |_| | || (_) | |   
-  \_|   |_|\___|_|   \__|\__\___|_|  \____/\__,_|___/___/ \____/ \__,_|\__\___/|_|   
-                                                                                      
+    cyanPen(r'''                                                     
   Easy Setup CLI - Version 1.0.0
   '''),
   );
@@ -248,9 +241,9 @@ void displayHelp() {
 // Display About
 void displayAbout() {
   print(greenPen('About Flutter Easy Setup CLI:'));
-  print('Created by [Your Name].');
+  print('Created by Agirîn.');
   print('This tool simplifies Flutter setup and fixes common issues.');
-  print('GitHub: [Your Repo Link]');
+  print('GitHub: https://github.com/Ag1rin/flutter_easy_setup');
   print('Version: 1.0.0');
   // Add your details here
 }
