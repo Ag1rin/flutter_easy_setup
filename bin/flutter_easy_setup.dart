@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:args/args.dart';
 import 'package:process_run/shell.dart';
+// ignore: unused_import
 import 'package:http/http.dart' as http;
 import 'package:ansicolor/ansicolor.dart';
 
@@ -12,11 +13,16 @@ final yellowPen = AnsiPen()..yellow(bold: true);
 final cyanPen = AnsiPen()..cyan(bold: true);
 
 void main(List<String> arguments) async {
-  final parser = ArgParser()..addFlag('version', abbr: 'v', help: 'Show version');
+  final parser = ArgParser()
+    ..addFlag('version', abbr: 'v', help: 'Show version');
   final results = parser.parse(arguments);
 
   if (results['version']) {
-    print(greenPen('Flutter Easy Setup CLI - Version 1.0.1 (Supports Flutter 3.38.5 - December 2025)'));
+    print(
+      greenPen(
+        'Flutter Easy Setup CLI - Version 1.0.1 (Supports Flutter 3.38.5 - December 2025)',
+      ),
+    );
     return;
   }
 
@@ -55,15 +61,21 @@ void main(List<String> arguments) async {
       }
     } catch (e) {
       logError('Error in operation: $e');
-      print(redPen('An error occurred: $e. Check flutter_setup_log.txt for details.'));
+      print(
+        redPen(
+          'An error occurred: $e. Check flutter_setup_log.txt for details.',
+        ),
+      );
     }
   }
 }
 
 void displayWelcome() {
-  print(cyanPen(r'''    
+  print(
+    cyanPen(r'''    
   Easy Setup CLI - Version 1.0.0 (Supports Flutter 3.38.5 - December 2025)
-  '''));
+  '''),
+  );
 
   print(greenPen('Welcome to Flutter Easy Setup!'));
   print('Options:');
@@ -121,11 +133,18 @@ Future<void> installOrFix() async {
     await shell.run('git --version');
     print(greenPen('Git is installed.'));
   } catch (_) {
-    print(redPen('Git not found. Please install Git manually from https://git-scm.com'));
+    print(
+      redPen(
+        'Git not found. Please install Git manually from https://git-scm.com',
+      ),
+    );
   }
 
   // Home directory handling
-  final home = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? '~';
+  final home =
+      Platform.environment['HOME'] ??
+      Platform.environment['USERPROFILE'] ??
+      '~';
   final flutterPath = Directory('$home/flutter');
 
   if (!flutterPath.existsSync()) {
@@ -144,9 +163,12 @@ Future<void> installOrFix() async {
     await for (final chunk in response) {
       downloaded += chunk.length;
       sink.add(chunk);
+      // ignore: unnecessary_null_comparison
       if (total != null && total > 0) {
         final percent = (downloaded / total * 100).toStringAsFixed(1);
-        stdout.write('\rDownloading Flutter SDK... $percent% ($downloaded/$total bytes)');
+        stdout.write(
+          '\rDownloading Flutter SDK... $percent% ($downloaded/$total bytes)',
+        );
       }
     }
     await sink.close();
@@ -178,7 +200,9 @@ Future<void> installOrFix() async {
     await shell.run('sdkmanager --version');
   } catch (_) {
     print(yellowPen('Installing Android cmdline-tools (latest)...'));
-    await shell.run('sdkmanager "cmdline-tools;latest" --sdk_root=${Platform.environment['ANDROID_HOME'] ?? '$home/android-sdk'}');
+    await shell.run(
+      'sdkmanager "cmdline-tools;latest" --sdk_root=${Platform.environment['ANDROID_HOME'] ?? '$home/android-sdk'}',
+    );
   }
 
   // Accept licenses
@@ -199,9 +223,17 @@ Future<void> installOrFix() async {
   // Permanent PATH instructions
   print(yellowPen('\nImportant: Add Flutter to PATH permanently:'));
   if (os == 'windows') {
-    print(yellowPen(r'Set Environment Variable: PATH += ;%USERPROFILE%\flutter\bin'));
+    print(
+      yellowPen(
+        r'Set Environment Variable: PATH += ;%USERPROFILE%\flutter\bin',
+      ),
+    );
   } else if (os == 'macos' || os == 'linux') {
-    print(yellowPen(r'Add to ~/.zshrc or ~/.bashrc: export PATH="$PATH:$home/flutter/bin"'));
+    print(
+      yellowPen(
+        r'Add to ~/.zshrc or ~/.bashrc: export PATH="$PATH:$home/flutter/bin"',
+      ),
+    );
     print(yellowPen('Then run: source ~/.zshrc (or ~/.bashrc)'));
   }
 
@@ -238,7 +270,9 @@ void displayHelp() {
   print('3. Add flutter/bin to your PATH permanently');
   print('4. Run "flutter doctor" and fix remaining issues');
   print('5. For Android: Licenses are auto-accepted where possible');
-  print('6. For iOS (macOS): Install Xcode from App Store + run "sudo xcode-select --install"');
+  print(
+    '6. For iOS (macOS): Install Xcode from App Store + run "sudo xcode-select --install"',
+  );
   print('Official guide: https://docs.flutter.dev/get-started/install');
 }
 
@@ -254,5 +288,8 @@ void displayAbout() {
 
 void logError(String message) {
   final logFile = File('flutter_setup_log.txt');
-  logFile.writeAsStringSync('${DateTime.now()}: $message\n', mode: FileMode.append);
+  logFile.writeAsStringSync(
+    '${DateTime.now()}: $message\n',
+    mode: FileMode.append,
+  );
 }
