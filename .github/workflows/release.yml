@@ -24,6 +24,11 @@ jobs:
 
       - name: Setup Dart SDK
         uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable   # همیشه آخرین stable رو نصب می‌کنه (بدون مشکل unzip)
+
+      - name: Verify Dart version
+        run: dart --version
 
       - name: Install dependencies
         run: dart pub get
@@ -45,6 +50,7 @@ jobs:
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
+<<<<<<< HEAD
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -85,3 +91,24 @@ jobs:
           asset_path: ${{ matrix.filename }}
           asset_name: ${{ matrix.filename }}
           asset_content_type: application/octet-stream
+=======
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Display structure
+        run: ls -R
+
+      - name: Create Release
+        uses: softprops/action-ghr@v2
+        with:
+          files: |
+            fes-linux/fes-linux
+            fes-macos/fes-macos
+            fes-windows.exe/fes-windows.exe
+          tag_name: ${{ github.ref_name }}
+          name: Flutter Easy Setup v${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+>>>>>>> c751f17e4a05f6f6d78c9371bd8682ceee27946d
