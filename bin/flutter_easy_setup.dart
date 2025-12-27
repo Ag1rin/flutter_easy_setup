@@ -16,7 +16,7 @@ void main(List<String> arguments) async {
   final results = parser.parse(arguments);
 
   if (results['version']) {
-    print(greenPen('Flutter Easy Setup CLI - Version 1.0.0'));
+    print(greenPen('Flutter Easy Setup CLI - Version 1.0.1 (Supports Flutter 3.38.5 - December 2025)'));
     return;
   }
 

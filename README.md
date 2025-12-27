@@ -20,7 +20,7 @@ Flutter setup can be painful, especially for beginners. Common issues include:
 
 **Flutter Easy Setup CLI** solves these with a colorful interactive menu, automatic downloads, live progress bars, and smart fixes — all in one tool!
 
-## Features (v1.0.0)
+## Features (v1.0.1)
 
 - Gorgeous colored ASCII art welcome screen
 - Interactive menu with 7 options

@@ -1,3 +1,6 @@
+## [1.0.1]
+- update for best release
+
 ## [1.0.0] 
 
 ### Added
