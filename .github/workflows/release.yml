@@ -22,8 +22,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Dart
+      - name: Setup Dart SDK
         uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable   # همیشه آخرین stable رو نصب می‌کنه (بدون مشکل unzip)
+
+      - name: Verify Dart version
+        run: dart --version
 
       - name: Install dependencies
         run: dart pub get
@@ -46,14 +51,19 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
 
-      - name: Create GitHub Release
-        run: |
-          gh release create ${{ github.ref_name }} \
-            fes-linux/fes-linux \
-            fes-macos/fes-macos \
-            fes-windows.exe/fes-windows.exe \
-            --title "Flutter Easy Setup v${{ github.ref_name }}" \
-            --notes "Initial release - Automated Flutter setup tool with beautiful CLI" \
-            --draft=false
+      - name: Display structure
+        run: ls -R
+
+      - name: Create Release
+        uses: softprops/action-ghr@v2
+        with:
+          files: |
+            fes-linux/fes-linux
+            fes-macos/fes-macos
+            fes-windows.exe/fes-windows.exe
+          tag_name: ${{ github.ref_name }}
+          name: Flutter Easy Setup v${{ github.ref_name }}
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
