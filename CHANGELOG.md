@@ -1,3 +1,19 @@
+## [1.0.6]
+
+### Added
+- README screenshots section with terminal preview images
+- Screenshot generation script (`scripts/generate_screenshots.ps1`)
+
+### Changed
+- Smart install: skip Flutter SDK download when already installed in PATH
+- Smart install: reuse local `~/flutter` installation without re-downloading
+- Dart is no longer installed separately — recognized as bundled with Flutter
+- Android cmdline-tools and licenses are only installed when missing
+- SDK check (option 2) now reports Dart status correctly when Flutter is present
+
+### Fixed
+- About screen version now matches package version
+
 ## [1.0.5]
 - fix release 
 

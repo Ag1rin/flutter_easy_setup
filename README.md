@@ -3,7 +3,7 @@
 A beautiful, interactive, and user-friendly command-line tool to automate Flutter installation, fix common setup issues, and get you started quickly on Windows, macOS, and Linux.
 
 ![Flutter](https://img.shields.io/badge/Flutter-Easy%20Setup-02569B?logo=flutter&logoColor=white&style=for-the-badge)  
-![Version](https://img.shields.io/badge/version-1.0.0-blue)  
+![Version](https://img.shields.io/badge/version-1.0.6-blue)  
 ![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?logo=dart&logoColor=white)  
 ![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)  
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -20,7 +20,7 @@ Flutter setup can be painful, especially for beginners. Common issues include:
 
 **Flutter Easy Setup CLI** solves these with a colorful interactive menu, automatic downloads, live progress bars, and smart fixes — all in one tool!
 
-## Features (v1.0.5)
+## Features (v1.0.6)
 
 - Gorgeous colored ASCII art welcome screen
 - Interactive menu with 7 options
@@ -38,7 +38,17 @@ Flutter setup can be painful, especially for beginners. Common issues include:
 
 ## Screenshots
 
-*(Coming soon after release – the menu looks amazing in your terminal!)*
+### Main Menu
+
+![Main menu](screenshots/main-menu.png)
+
+### Installation Guide
+
+![Installation guide](screenshots/installation-guide.png)
+
+### About
+
+![About screen](screenshots/about.png)
 
 ## Installation
 
@@ -63,7 +73,7 @@ dart run
 
 ### Option 3: Standalone executables (recommended for easy sharing)
 
-Download the pre-compiled binary for your platform from the [Releases page](https://github.com/Ag1rin/flutter_easy_setup/releases/tag/v1.0.0):
+Download the pre-compiled binary for your platform from the [Releases page](https://github.com/Ag1rin/flutter_easy_setup/releases/latest):
 
 - **Windows**: `fes-windows.exe`
 - **macOS**: `fes-macos` (run `chmod +x fes-macos` if needed)
@@ -94,7 +104,7 @@ You'll see a beautiful welcome screen and menu:
 
 ## Supported Flutter Version
 
-This release (v1.0.5) installs and supports **Flutter 3.38.5 stable** (released December 12, 2025) — the latest stable version as of December 2025.
+This release (v1.0.6) installs and supports **Flutter 3.38.5 stable** (released December 12, 2025) — the latest stable version as of December 2025.
 
 Future releases will include automatic latest-version detection.
 
