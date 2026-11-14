@@ -1,0 +1,15 @@
+{
+  "repository": "https://github.com/affaan-m/everything-claude-code",
+  "commit": "d2ef268",
+  "installed": [
+    "rules/common",
+    "rules/dart",
+    "skills/dart-flutter-patterns",
+    "skills/flutter-dart-code-review",
+    "agents/flutter-reviewer",
+    "agents/dart-build-resolver",
+    "commands/flutter-build",
+    "commands/flutter-review",
+    "commands/flutter-test"
+  ]
+}
