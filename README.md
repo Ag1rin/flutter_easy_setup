@@ -1,138 +1,107 @@
-# Flutter Easy Setup CLI
+# Flutter Easy Setup
 
-A beautiful, interactive, and user-friendly command-line tool to automate Flutter installation, fix common setup issues, and get you started quickly on Windows, macOS, and Linux.
+`fes` installs and repairs a Flutter toolchain on Windows, macOS, and Linux.
+It checks the Flutter SDK archive with SHA-256 before extracting it, and it asks before it changes PATH or a shell startup file.
+There is no telemetry.
 
-![Flutter](https://img.shields.io/badge/Flutter-Easy%20Setup-02569B?logo=flutter&logoColor=white&style=for-the-badge)  
-![Version](https://img.shields.io/badge/version-1.0.6-blue)  
-![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?logo=dart&logoColor=white)  
-![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)  
+[![CI](https://github.com/Ag1rin/flutter_easy_setup/actions/workflows/ci.yml/badge.svg)](https://github.com/Ag1rin/flutter_easy_setup/actions/workflows/ci.yml)
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-## Why This Tool?
+## Install
 
-Flutter setup can be painful, especially for beginners. Common issues include:
+Download a binary from the [latest release](https://github.com/Ag1rin/flutter_easy_setup/releases/latest). The release also contains `SHA256SUMS`.
 
-- `cmdline-tools component is missing`
-- `Waiting for another flutter command to release the startup lock`
-- Android licenses not accepted
-- Incorrect PATH configuration
-- Dart/Flutter SDK not detected in IDEs
+- Windows x64: `fes-windows.exe` or `fes-windows-x64.exe`
+- macOS Apple silicon: `fes-macos` or `fes-macos-arm64`
+- macOS Intel: `fes-macos-x64`
+- Linux x64: `fes-linux` or `fes-linux-x64`
+- Linux arm64: `fes-linux-arm64`
 
-**Flutter Easy Setup CLI** solves these with a colorful interactive menu, automatic downloads, live progress bars, and smart fixes — all in one tool!
-
-## Features (v1.0.6)
-
-- Gorgeous colored ASCII art welcome screen
-- Interactive menu with 7 options
-- Automatic detection of your OS (Windows, macOS, Linux)
-- Download & extract the latest stable Flutter SDK with a **live progress bar**
-- Auto-accept Android licenses
-- Automatically remove startup lockfile
-- Install/fix Android cmdline-tools
-- Run `flutter doctor` directly
-- Check installed SDKs (Flutter, Dart, Android tools)
-- One-click Flutter upgrade
-- Detailed installation guide and troubleshooting tips
-- Error logging to `flutter_setup_log.txt`
-- Clear instructions for permanent PATH setup (per OS)
-
-## Screenshots
-
-### Main Menu
-
-![Main menu](screenshots/main-menu.png)
-
-### Installation Guide
-
-![Installation guide](screenshots/installation-guide.png)
-
-### About
-
-![About screen](screenshots/about.png)
-
-## Installation
-
-### Option 1: Global install via pub (requires Dart SDK)
+Or install from pub when Dart is already present:
 
 ```bash
 dart pub global activate flutter_easy_setup
+fes --version
 ```
 
-Run it:
+`install.ps1` and `install.sh` download the release asset, check `SHA256SUMS`, and copy the binary into a local directory. They do not change PATH.
 
-```bash
-fes
-```
+## Use
 
-### Option 2: Run directly (no global install needed)
+`fes` with no arguments opens the menu:
 
-```bash
-dart pub get
-dart run
-```
-
-### Option 3: Standalone executables (recommended for easy sharing)
-
-Download the pre-compiled binary for your platform from the [Releases page](https://github.com/Ag1rin/flutter_easy_setup/releases/latest):
-
-- **Windows**: `fes-windows.exe`
-- **macOS**: `fes-macos` (run `chmod +x fes-macos` if needed)
-- **Linux**: `fes-linux` (run `chmod +x fes-linux`)
-
-Double-click or run in terminal — no Dart required!
-
-## Usage
-
-Launch the tool with `fes` (or the executable name).
-
-You'll see a beautiful welcome screen and menu:
-
-```
+```text
 1. Run Flutter Doctor
 2. Check Dart, Flutter, and Android SDKs
 3. Install missing components or full setup
 4. Check and update everything
 5. Installation Guide
 6. About
+7. Language / زبان
 0. Exit
 ```
 
-**Recommended for new users:**
-1. Select **3** → It will download Flutter (if missing), extract it, fix common issues, and set up everything.
-2. Follow the on-screen instructions to add Flutter to your PATH **permanently**.
-3. Select **1** → Run `flutter doctor` to verify a clean setup.
+Option 3 installs Flutter into `~/flutter`. Scripted use:
 
-## Supported Flutter Version
+```bash
+fes install --flutter-version 3.24.5 --channel stable --dry-run
+fes doctor --json
+fes path --undo
+fes mirror list
+fes mirror set china
+fes use 3.24.5
+fes create my_app --template state
+```
 
-This release (v1.0.6) installs and supports **Flutter 3.38.5 stable** (released December 12, 2025) — the latest stable version as of December 2025.
+`--dry-run` prints the action and writes nothing. `--yes` confirms PATH edits, license acceptance, and deletes. `-v` prints the `fes` version, not a Flutter version.
 
-Future releases will include automatic latest-version detection.
+## What it sets up
 
-## Supported Platforms
+- The current Flutter stable archive for this OS and CPU, or a pinned version
+- PATH, with a backup under `~/.fes/backups/` and `fes path --undo`
+- Temurin JDK 17 under `~/.fes/jdks/`
+- Android command-line tools, platform-tools, one platform, and build-tools
+- On macOS, a confirmed `xcode-select --install` or CocoaPods install when doctor asks for it
+- Several Flutter SDKs under `~/.fes/versions/`
+- Project starters: `basic`, `state` (a small `ChangeNotifier`), and `clean`
 
-- Windows (x64)
-- macOS (Intel & Apple Silicon arm64)
-- Linux (x64)
+Official Google storage is the default. Other mirrors, including `https://storage.flutter-io.cn`, are listed and applied only after you choose one.
 
-## Contributing
+## Compared with FVM and puro
 
-Contributions are very welcome! Feel free to:
+[FVM](https://github.com/leoafarias/fvm) and [puro](https://github.com/pingbird/puro) pin Flutter versions for a project and integrate with editors. `fes` is a setup and repair tool: it downloads a verified SDK, repairs PATH, JDK, and Android command-line tools, and can keep more than one SDK. You can use `fes` to get a machine ready and still use FVM or puro inside a repository.
 
-- Report bugs or suggest features via Issues
-- Submit Pull Requests
-- Improve the UI, add new auto-fixes, or support more tools (e.g., Java auto-install)
+## Doctor questions
+
+**cmdline-tools component is missing.** `fes doctor` can install the pinned Android command-line tools into `ANDROID_HOME` after you confirm.
+
+**Android license status unknown.** After the tools exist, `fes` can pass `y` to `sdkmanager --licenses` only after a second confirmation or `--yes`.
+
+**Waiting for another flutter command to release the startup lock.** `fes` deletes `~/flutter/bin/cache/lockfile` only after you confirm. It does not delete the lock during a normal install.
+
+## Screenshots
+
+![Main menu](screenshots/main-menu.png)
+
+![Installation guide](screenshots/installation-guide.png)
+
+![About](screenshots/about.png)
+
+A short demo belongs at `doc/demo.gif`. Record it with the steps in [doc/RECORD_DEMO.md](doc/RECORD_DEMO.md).
+
+## Documentation
+
+- [Persian README](README.fa.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security](SECURITY.md)
+- [Roadmap](ROADMAP.md)
+- [Changelog](CHANGELOG.md)
 
 ## Author
 
-**Agirîn**  
-GitHub: [@Ag1rin](https://github.com/Ag1rin)  
-Project: https://github.com/Ag1rin/flutter_easy_setup
+Agirîn — [github.com/Ag1rin](https://github.com/Ag1rin)
 
 ## License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
-
----
-
-**Made with ❤️ for the Flutter community**  
-Let's make Flutter setup painless for everyone! 🚀
+MIT. See [LICENSE](LICENSE).

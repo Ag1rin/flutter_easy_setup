@@ -1,0 +1,8 @@
+# Opt-in mirrors. `official` is the default until the user runs `fes mirror set`.
+mirrors:
+  - id: official
+    storage: https://storage.googleapis.com
+    pub: https://pub.dev
+  - id: china
+    storage: https://storage.flutter-io.cn
+    pub: https://pub.flutter-io.cn

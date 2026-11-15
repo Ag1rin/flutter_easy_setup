@@ -1,0 +1,18 @@
+PackageIdentifier: Ag1rin.FlutterEasySetup
+PackageVersion: 1.1.0
+PackageLocale: en-US
+Publisher: Agirîn
+PackageName: Flutter Easy Setup
+License: MIT
+ShortDescription: Install and repair Flutter on Windows, macOS, and Linux.
+Installers:
+  - Architecture: x64
+    InstallerType: portable
+    InstallerUrl: https://github.com/Ag1rin/flutter_easy_setup/releases/download/v1.1.0/fes-windows-x64.exe
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+  - Architecture: arm64
+    InstallerType: portable
+    InstallerUrl: https://github.com/Ag1rin/flutter_easy_setup/releases/download/v1.1.0/fes-windows-arm64.exe
+    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000
+ManifestType: singleton
+ManifestVersion: 1.6.0

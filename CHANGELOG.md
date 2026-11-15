@@ -1,3 +1,19 @@
+## [1.1.0] - 2026-11-15
+
+### Added
+- Flutter release selection by OS, architecture, and channel, with SHA-256 verification before extract
+- Confirmed PATH edits with backup and `fes path --undo`
+- Temurin JDK 17 and pinned Android command-line tools
+- `fes doctor --json`, `fes mirror`, `fes list`, `fes use`, `fes remove`, `fes create`, `fes update`, and `fes net`
+- English and Persian messages
+- Checksum-verified install scripts and winget, Scoop, and Homebrew templates
+- Pull-request CI
+
+### Changed
+- Menu option 3 still installs Flutter to `~/flutter` and now downloads the current stable archive for this machine
+- PATH, shell startup files, and deletes wait for confirmation or `--yes`
+- The release workflow publishes per-architecture binaries and `SHA256SUMS`
+
 ## [1.0.6]
 
 ### Added

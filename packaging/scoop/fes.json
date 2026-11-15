@@ -1,0 +1,18 @@
+{
+  "version": "1.1.0",
+  "description": "Install and repair Flutter on Windows, macOS, and Linux.",
+  "homepage": "https://github.com/Ag1rin/flutter_easy_setup",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/Ag1rin/flutter_easy_setup/releases/download/v1.1.0/fes-windows-x64.exe",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "bin": [["fes-windows-x64.exe", "fes"]]
+    },
+    "arm64": {
+      "url": "https://github.com/Ag1rin/flutter_easy_setup/releases/download/v1.1.0/fes-windows-arm64.exe",
+      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "bin": [["fes-windows-arm64.exe", "fes"]]
+    }
+  }
+}

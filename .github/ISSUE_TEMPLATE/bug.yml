@@ -1,0 +1,17 @@
+name: Bug report
+description: Something fes did wrong
+title: "fix: "
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened
+      description: Include the command, OS, and the text from flutter_setup_log.txt. Do not paste tokens.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: fes version
+      placeholder: 1.1.0
+    validations:
+      required: true
