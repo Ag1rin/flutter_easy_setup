@@ -8,6 +8,8 @@ There is no telemetry.
 ![Version](https://img.shields.io/badge/version-1.1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+![Flutter Easy Setup](doc/demo.gif)
+
 ## Install
 
 Download a binary from the [latest release](https://github.com/Ag1rin/flutter_easy_setup/releases/latest). The release also contains `SHA256SUMS`.
@@ -87,8 +89,6 @@ Official Google storage is the default. Other mirrors, including `https://storag
 ![Installation guide](screenshots/installation-guide.png)
 
 ![About](screenshots/about.png)
-
-A short demo belongs at `doc/demo.gif`. Record it with the steps in [doc/RECORD_DEMO.md](doc/RECORD_DEMO.md).
 
 ## Documentation
 
