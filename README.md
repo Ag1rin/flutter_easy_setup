@@ -82,14 +82,6 @@ Official Google storage is the default. Other mirrors, including `https://storag
 
 **Waiting for another flutter command to release the startup lock.** `fes` deletes `~/flutter/bin/cache/lockfile` only after you confirm. It does not delete the lock during a normal install.
 
-## Screenshots
-
-![Main menu](screenshots/main-menu.png)
-
-![Installation guide](screenshots/installation-guide.png)
-
-![About](screenshots/about.png)
-
 ## Documentation
 
 - [Persian README](README.fa.md)
