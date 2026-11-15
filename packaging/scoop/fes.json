@@ -6,12 +6,12 @@
   "architecture": {
     "64bit": {
       "url": "https://github.com/Ag1rin/flutter_easy_setup/releases/download/v1.1.0/fes-windows-x64.exe",
-      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "hash": "4549d488acb94c16a560bcea1773b2126cf99df4ed1f69fd2e1ec993118576ec",
       "bin": [["fes-windows-x64.exe", "fes"]]
     },
     "arm64": {
       "url": "https://github.com/Ag1rin/flutter_easy_setup/releases/download/v1.1.0/fes-windows-arm64.exe",
-      "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "hash": "4ae57875dcdce203c40ce818e4af158002dc04604080f3baa94ed9742de5c7da",
       "bin": [["fes-windows-arm64.exe", "fes"]]
     }
   }
