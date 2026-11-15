@@ -70,6 +70,7 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: dist
@@ -93,4 +94,4 @@ jobs:
           tag="${GITHUB_REF_NAME}"
           gh release create "$tag" dist/* \
             --title "Flutter Easy Setup $tag" \
-            --verify-tag
+            --repo "$GITHUB_REPOSITORY"
