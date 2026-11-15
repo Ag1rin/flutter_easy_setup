@@ -1,89 +1,89 @@
-name: Build and Release Executables
+name: Release
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
-  contents: write   # اجازه ایجاد و آپلود به release
+  contents: read
 
 jobs:
   build:
+    name: ${{ matrix.artifact }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            artifact_name: fes-linux
-          - os: macos-latest
-            artifact_name: fes-macos
           - os: windows-latest
-            artifact_name: fes-windows.exe
-
+            artifact: fes-windows-x64.exe
+            alias: fes-windows.exe
+          - os: windows-11-arm
+            artifact: fes-windows-arm64.exe
+            alias: ""
+          - os: macos-latest
+            artifact: fes-macos-arm64
+            alias: fes-macos
+          - os: macos-15-intel
+            artifact: fes-macos-x64
+            alias: ""
+          - os: ubuntu-latest
+            artifact: fes-linux-x64
+            alias: fes-linux
+          - os: ubuntu-24.04-arm
+            artifact: fes-linux-arm64
+            alias: ""
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@v1
-
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
       - name: Install dependencies
         run: dart pub get
-
-      - name: Compile executable
-        run: dart compile exe bin/flutter_easy_setup.dart -o ${{ matrix.artifact_name }}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Compile
+        run: dart compile exe bin/flutter_easy_setup.dart -o ${{ matrix.artifact }}
+      - name: Keep the README asset name
+        if: matrix.alias != ''
+        shell: bash
+        run: cp "${{ matrix.artifact }}" "${{ matrix.alias }}"
+      - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.artifact_name }}
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: matrix.alias != ''
+        with:
+          name: ${{ matrix.alias }}
+          path: ${{ matrix.alias }}
+          if-no-files-found: error
 
-  create-release:
+  publish:
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Write SHA256SUMS
+        working-directory: dist
+        run: |
+          set -euo pipefail
+          : > SHA256SUMS
+          for file in $(find . -type f ! -name SHA256SUMS | sort); do
+            hash=$(sha256sum "$file" | awk '{print $1}')
+            name=$(basename "$file")
+            printf '%s  %s\n' "$hash" "$name" >> SHA256SUMS
+          done
+          cat SHA256SUMS
+      - name: Publish GitHub release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Flutter Easy Setup v${{ github.ref_name }}
-          draft: false
-          prerelease: false
-
-  upload-assets:
-    needs: create-release
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - artifact: fes-linux
-            filename: fes-linux
-          - artifact: fes-macos
-            filename: fes-macos
-          - artifact: fes-windows.exe
-            filename: fes-windows.exe
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ matrix.artifact }}
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ${{ matrix.filename }}
-          asset_name: ${{ matrix.filename }}
-          asset_content_type: application/octet-stream
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          gh release create "$tag" dist/* \
+            --title "Flutter Easy Setup $tag" \
+            --verify-tag
