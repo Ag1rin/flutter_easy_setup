@@ -12,6 +12,7 @@ jobs:
   build:
     name: ${{ matrix.artifact }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.optional }}
     strategy:
       fail-fast: false
       matrix:
@@ -19,21 +20,27 @@ jobs:
           - os: windows-latest
             artifact: fes-windows-x64.exe
             alias: fes-windows.exe
+            optional: false
           - os: windows-11-arm
             artifact: fes-windows-arm64.exe
             alias: ""
+            optional: true
           - os: macos-latest
             artifact: fes-macos-arm64
             alias: fes-macos
+            optional: false
           - os: macos-15-intel
             artifact: fes-macos-x64
             alias: ""
+            optional: true
           - os: ubuntu-latest
             artifact: fes-linux-x64
             alias: fes-linux
+            optional: false
           - os: ubuntu-24.04-arm
             artifact: fes-linux-arm64
             alias: ""
+            optional: true
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1

@@ -1,6 +1,6 @@
 # Recording the demo
 
-Save the recording as `doc/demo.gif`. Do not commit a generated placeholder.
+`doc/demo.gif` is the demo. To record a replacement from a real terminal:
 
 1. Use a terminal at least 100 columns wide with a dark background.
 2. Run `fes` and show the menu.
